@@ -85,3 +85,4 @@ Step 6: Draft Fallback - Implement save to drafts, resend UI, tests, verify
 - Verified draft save and resend functionality through tests
 - Appended all actions to steps_taken.md
 Created dev_diary.md
+Created extension_suggestions.md
