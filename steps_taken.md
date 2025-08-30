@@ -69,3 +69,18 @@ Step 5: Email Send - Implement Gmail API or simulate, tests, verify
 - Ran npm test; QuickReporting tests passed (email send test verifies Alert.alert is called correctly)
 - Email delivery simulated successfully without errors
 - Appended all actions to steps_taken.md
+Step 6: Draft Fallback - Implement save to drafts, resend UI, tests, verify
+- Installed @react-native-async-storage/async-storage for local storage
+- Modified QuickReporting.tsx to import AsyncStorage and add drafts state
+- Added loadDrafts function to load drafts from AsyncStorage on component mount
+- Updated sendEmail to be async with simulated send timeout (2s for testing, 60s for production)
+- Implemented fallback: if send fails, save draft to AsyncStorage and show alert
+- Added resendDraft function to resend from drafts and remove from storage
+- Added UI for drafts: list drafts with resend button
+- Added styles for draftItem, resendButton, resendButtonText
+- Updated QuickReporting.test.tsx with AsyncStorage mocks
+- Added tests for loading drafts on mount, saving to drafts on failure, displaying drafts and resending
+- Fixed existing test for send email to handle async with fake timers
+- Ran npm test for QuickReporting; all 9 tests passed
+- Verified draft save and resend functionality through tests
+- Appended all actions to steps_taken.md

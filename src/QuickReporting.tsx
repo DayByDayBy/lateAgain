@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './supabaseClient';
 
 interface Company {
@@ -34,9 +35,11 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
   const [selectedRoute, setSelectedRoute] = useState<Route | null>(null);
   const [selectedIssue, setSelectedIssue] = useState<IssueType | null>(null);
   const [previewText, setPreviewText] = useState<string>('');
+  const [drafts, setDrafts] = useState<any[]>([]);
 
   useEffect(() => {
     fetchCompanies();
+    loadDrafts();
   }, []);
 
   useEffect(() => {
@@ -74,6 +77,13 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  const loadDrafts = async () => {
+    const stored = await AsyncStorage.getItem('drafts');
+    if (stored) {
+      setDrafts(JSON.parse(stored));
+    }
+  };
+
   const generatePreview = () => {
     if (!selectedCompany || !selectedRoute || !selectedIssue) return;
     let text = templates[selectedIssue];
@@ -82,9 +92,49 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
     setPreviewText(text);
   };
 
-  const sendEmail = () => {
+  const sendEmail = async () => {
     if (!selectedCompany) return;
-    Alert.alert('Email Sent', `Email sent to ${selectedCompany.email}`);
+    try {
+      // Simulate sending with timeout
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          // Simulate success or failure
+          if (Math.random() > 0.5) { // 50% chance of failure for testing
+            resolve(true);
+          } else {
+            reject(new Error('Send failed'));
+          }
+        }, 2000); // 2s for testing, change to 60000 for 60s
+      });
+      Alert.alert('Email Sent', `Email sent to ${selectedCompany.email}`);
+    } catch (error) {
+      // Save to drafts
+      const draft = {
+        id: Date.now().toString(),
+        company: selectedCompany,
+        route: selectedRoute,
+        issue: selectedIssue,
+        previewText,
+      };
+      const newDrafts = [...drafts, draft];
+      setDrafts(newDrafts);
+      await AsyncStorage.setItem('drafts', JSON.stringify(newDrafts));
+      Alert.alert('Send Failed', 'Email saved to drafts for later resend.');
+    }
+  };
+
+  const resendDraft = async (draft: any) => {
+    try {
+      // Simulate resend
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      Alert.alert('Resent', `Email resent to ${draft.company.email}`);
+      // Remove from drafts
+      const newDrafts = drafts.filter(d => d.id !== draft.id);
+      setDrafts(newDrafts);
+      await AsyncStorage.setItem('drafts', JSON.stringify(newDrafts));
+    } catch (error) {
+      Alert.alert('Resend Failed', 'Failed to resend.');
+    }
   };
 
   const issues: IssueType[] = ['Late', 'Early', 'Cancelled', 'Other'];
@@ -158,6 +208,20 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
         </>
       ) : null}
+
+      {drafts.length > 0 && (
+        <>
+          <Text style={styles.label}>Drafts:</Text>
+          {drafts.map((draft) => (
+            <View key={draft.id} style={styles.draftItem}>
+              <Text>{draft.previewText.substring(0, 50)}...</Text>
+              <TouchableOpacity style={styles.resendButton} onPress={() => resendDraft(draft)}>
+                <Text style={styles.resendButtonText}>Resend</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </>
+      )}
     </View>
   );
 };
@@ -205,6 +269,26 @@ const styles = StyleSheet.create({
   sendButtonText: {
     color: '#fff',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  draftItem: {
+    padding: 10,
+    margin: 5,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  resendButton: {
+    backgroundColor: '#28a745',
+    padding: 10,
+    borderRadius: 5,
+  },
+  resendButtonText: {
+    color: '#fff',
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });
