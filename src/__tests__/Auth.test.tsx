@@ -1,7 +1,6 @@
-import React from 'react'
-import { render, fireEvent } from '@testing-library/react-native'
-import LoginScreen from '../LoginScreen'
-import HomeScreen from '../HomeScreen'
+jest.mock('expo', () => ({}))
+
+jest.mock('expo/src/winter/runtime.native', () => ({}))
 
 jest.mock('@supabase/supabase-js', () => ({
   createClient: jest.fn(() => ({
@@ -16,8 +15,13 @@ jest.mock('@supabase/supabase-js', () => ({
   }))
 }))
 
-jest.mock('expo-web-browser')
-jest.mock('expo-auth-session')
+jest.mock('expo-web-browser', () => ({
+  maybeCompleteAuthSession: jest.fn(),
+}))
+
+jest.mock('expo-auth-session', () => ({
+  makeRedirectUri: jest.fn(() => 'redirect-uri'),
+}))
 
 const mockSignInWithGoogle = jest.fn()
 const mockSignOut = jest.fn()
@@ -34,6 +38,11 @@ jest.mock('../supabaseClient', () => ({
     }
   }
 }))
+
+import React from 'react'
+import { render, fireEvent } from '@testing-library/react-native'
+import LoginScreen from '../LoginScreen'
+import HomeScreen from '../HomeScreen'
 
 describe('Auth Components', () => {
   describe('LoginScreen', () => {
