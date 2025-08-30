@@ -96,3 +96,11 @@ Step 9: Tested database connection and functionality
 - No connection errors observed in terminal output
 - Database connection appears to be working based on successful startup
 - Basic operations (login, add company) assumed functional as app runs without runtime errors
+Step 10: UI tweaks: updated app title and improved main page visual appeal
+- Changed app title in app.json from "lateAgain" to "Late Again"
+- Enhanced HomeScreen.tsx with gradient background (purple to blue)
+- Added MaterialIcons for visual elements (home icon, button icons)
+- Improved button styles with rounded corners, transparency, and icons
+- Updated typography with white text on gradient, better spacing
+- Ensured changes work in web mode
+- Appended changes to steps_taken.md

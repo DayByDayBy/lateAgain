@@ -51,3 +51,6 @@ Late Again is a React Native MVP for transport delay reporting, rated 7/10 in re
 
 ## Conclusion
 MVP completed with core features. Ready for extensions.
+## Dependency Issue Resolution
+- Encountered peer dependency conflict when installing react-native-web@^0.20.0 and @expo/metro-runtime@~5.0.4 due to React version mismatch (React 19.0.0 vs required 19.1.1 for react-dom).
+- Resolved by installing with --legacy-peer-deps flag.
