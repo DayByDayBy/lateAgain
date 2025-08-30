@@ -13,15 +13,22 @@ jest.mock('../supabaseClient', () => ({
 
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import QuickReporting from '../QuickReporting';
 
 const mockSupabase = require('../supabaseClient').supabase;
 
 describe('QuickReporting', () => {
   const mockNavigation = {};
+  let alertSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    alertSpy.mockRestore();
   });
 
   it('renders correctly', () => {
@@ -126,5 +133,43 @@ describe('QuickReporting', () => {
     expect(templates.Early).toContain('arrived earlier');
     expect(templates.Cancelled).toContain('cancelled');
     expect(templates.Other).toContain('an issue');
+  });
+
+  it('sends email when send button is pressed', async () => {
+    const mockCompanies = [{ id: '1', name: 'Company A', email: 'a@example.com' }];
+    const mockRoutes = [{ id: 'r1', route_number: 101, description: 'Route 101' }];
+
+    mockSupabase.from
+      .mockReturnValueOnce({
+        select: jest.fn().mockResolvedValue({ data: mockCompanies, error: null }),
+      })
+      .mockReturnValueOnce({
+        select: jest.fn().mockReturnValue({
+          eq: jest.fn().mockResolvedValue({ data: mockRoutes, error: null }),
+        }),
+      });
+
+    const { getByText } = render(<QuickReporting navigation={mockNavigation} />);
+
+    await waitFor(() => {
+      expect(getByText('Company A')).toBeTruthy();
+    });
+
+    fireEvent.press(getByText('Company A'));
+
+    await waitFor(() => {
+      expect(getByText('Route 101: Route 101')).toBeTruthy();
+    });
+
+    fireEvent.press(getByText('Route 101: Route 101'));
+    fireEvent.press(getByText('Late'));
+
+    await waitFor(() => {
+      expect(getByText('Send Email')).toBeTruthy();
+    });
+
+    fireEvent.press(getByText('Send Email'));
+
+    expect(alertSpy).toHaveBeenCalledWith('Email Sent', 'Email sent to a@example.com');
   });
 });

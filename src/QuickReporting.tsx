@@ -82,6 +82,11 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
     setPreviewText(text);
   };
 
+  const sendEmail = () => {
+    if (!selectedCompany) return;
+    Alert.alert('Email Sent', `Email sent to ${selectedCompany.email}`);
+  };
+
   const issues: IssueType[] = ['Late', 'Early', 'Cancelled', 'Other'];
 
   return (
@@ -148,6 +153,9 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
         <>
           <Text style={styles.label}>Email Preview:</Text>
           <Text style={styles.preview}>{previewText}</Text>
+          <TouchableOpacity style={styles.sendButton} onPress={sendEmail}>
+            <Text style={styles.sendButtonText}>Send Email</Text>
+          </TouchableOpacity>
         </>
       ) : null}
     </View>
@@ -186,6 +194,18 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 5,
     marginTop: 10,
+  },
+  sendButton: {
+    backgroundColor: '#007bff',
+    padding: 15,
+    borderRadius: 5,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  sendButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
