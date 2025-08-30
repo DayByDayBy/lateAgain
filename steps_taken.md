@@ -86,3 +86,6 @@ Step 6: Draft Fallback - Implement save to drafts, resend UI, tests, verify
 - Appended all actions to steps_taken.md
 Created dev_diary.md
 Created extension_suggestions.md
+Step 7: Updated Supabase client configuration with real credentials
+- Replaced placeholders in src/supabaseClient.ts with actual Supabase URL and anon key
+- Note: Credentials hardcoded; consider using environment variables for security

@@ -2,8 +2,8 @@ import { createClient } from '@supabase/supabase-js'
 import * as WebBrowser from 'expo-web-browser'
 import * as AuthSession from 'expo-auth-session'
 
-const supabaseUrl = 'YOUR_SUPABASE_URL' // Replace with your actual Supabase URL
-const supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY' // Replace with your actual Supabase anon key
+const supabaseUrl = 'https://wunqhvaaoahzjsnwxsed.supabase.co' // Replace with your actual Supabase URL
+const supabaseAnonKey = 'sb_publishable_m4EaeJ7HJgJG8q9k4Cj9-w_Onqy7MH6' // Replace with your actual Supabase anon key
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
