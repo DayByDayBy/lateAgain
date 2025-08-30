@@ -23,6 +23,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ route, navigation }) => {
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CompanyList')}>
         <Text style={styles.buttonText}>Manage Companies</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('QuickReporting')}>
+        <Text style={styles.buttonText}>Quick Reporting</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={[styles.button, { backgroundColor: '#DB4437' }]} onPress={handleSignOut}>
         <Text style={styles.buttonText}>Sign Out</Text>
       </TouchableOpacity>
