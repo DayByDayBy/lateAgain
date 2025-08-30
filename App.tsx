@@ -1,8 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { supabase } from './src/supabaseClient';
 import LoginScreen from './src/LoginScreen';
 import HomeScreen from './src/HomeScreen';
+import CompanyList from './src/CompanyList';
+import CompanyForm from './src/CompanyForm';
+
+const Stack = createStackNavigator();
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -16,9 +22,19 @@ export default function App() {
   }, []);
 
   return (
-    <>
-      {user ? <HomeScreen user={user} /> : <LoginScreen />}
+    <NavigationContainer>
+      <Stack.Navigator>
+        {user ? (
+          <>
+            <Stack.Screen name="Home" component={HomeScreen} initialParams={{ user }} />
+            <Stack.Screen name="CompanyList" component={CompanyList} />
+            <Stack.Screen name="CompanyForm" component={CompanyForm} />
+          </>
+        ) : (
+          <Stack.Screen name="Login" component={LoginScreen} />
+        )}
+      </Stack.Navigator>
       <StatusBar style="auto" />
-    </>
+    </NavigationContainer>
   );
 }

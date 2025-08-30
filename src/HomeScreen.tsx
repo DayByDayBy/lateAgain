@@ -3,10 +3,12 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import { signOut } from './supabaseClient'
 
 interface HomeScreenProps {
-  user: any
+  route: any;
+  navigation: any;
 }
 
-const HomeScreen: React.FC<HomeScreenProps> = ({ user }) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ route, navigation }) => {
+  const user = route.params?.user;
   const handleSignOut = async () => {
     const { error } = await signOut()
     if (error) {
@@ -18,7 +20,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ user }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to Late Again</Text>
       <Text style={styles.email}>Logged in as: {user?.email}</Text>
-      <TouchableOpacity style={styles.button} onPress={handleSignOut}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CompanyList')}>
+        <Text style={styles.buttonText}>Manage Companies</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={[styles.button, { backgroundColor: '#DB4437' }]} onPress={handleSignOut}>
         <Text style={styles.buttonText}>Sign Out</Text>
       </TouchableOpacity>
     </View>

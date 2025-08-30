@@ -63,9 +63,11 @@ describe('Auth Components', () => {
 
   describe('HomeScreen', () => {
     const mockUser = { email: 'test@example.com' }
+    const mockRoute = { params: { user: mockUser } }
+    const mockNavigation = {}
 
     it('renders correctly with user', () => {
-      const { getByText } = render(<HomeScreen user={mockUser} />)
+      const { getByText } = render(<HomeScreen route={mockRoute} navigation={mockNavigation} />)
       expect(getByText('Welcome to Late Again')).toBeTruthy()
       expect(getByText('Logged in as: test@example.com')).toBeTruthy()
       expect(getByText('Sign Out')).toBeTruthy()
@@ -73,7 +75,7 @@ describe('Auth Components', () => {
 
     it('calls signOut on button press', async () => {
       mockSignOut.mockResolvedValue({ error: null })
-      const { getByText } = render(<HomeScreen user={mockUser} />)
+      const { getByText } = render(<HomeScreen route={mockRoute} navigation={mockNavigation} />)
       const button = getByText('Sign Out')
       fireEvent.press(button)
       expect(mockSignOut).toHaveBeenCalled()
