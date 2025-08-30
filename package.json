@@ -29,6 +29,13 @@
   },
   "private": true,
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "setupFiles": ["<rootDir>/jest.setup.js"],
+    "transformIgnorePatterns": [
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?|expo.*))"
+    ],
+    "moduleNameMapper": {
+      "^expo/src/winter$": "<rootDir>/__mocks__/expo-winter.js"
+    }
   }
 }
