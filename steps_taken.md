@@ -212,3 +212,14 @@ Step 23: Analyzed SVG file 'assets/bus_stop_trace.svg' for background framing
 - Determined opacity: 0.1-0.3 for subtle background framing
 - Recommended placement: Create BackgroundSvg component in App.tsx for all pages
 - Reviewed for issues: Complex paths may impact performance, ensure react-native-svg installed, consider responsive sizing
+
+Step 24: Addressed SVG support feedback - implemented inline SVG imports with react-native-svg-transformer
+- Verified react-native-svg is installed (15.11.2), react-native-svg-uri not needed as SvgUri is in react-native-svg
+- Added console.log in LoginScreen.tsx to verify Asset.fromModule URI resolution (logged as 'SVG URI: [uri]')
+- Installed react-native-svg-transformer as dev dependency for inline SVG imports
+- Created metro.config.js to configure Metro bundler for SVG transformation
+- Updated LoginScreen.tsx to use inline SVG import: import BusStopTrace from '../assets/bus_stop_trace.svg'
+- Replaced SvgUri component with BusStopTrace component for better performance and reliability
+- Created src/custom.d.ts with TypeScript declarations for SVG modules
+- App bundles successfully with inline SVG, running on web at port 8082
+- SVG should now load reliably without URI resolution issues

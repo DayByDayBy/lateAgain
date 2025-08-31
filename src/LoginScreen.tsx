@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, TextInput, Alert, StyleSheet, Dimensions } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
-import { SvgUri } from 'react-native-svg'
-import { Asset } from 'expo-asset'
 import { signInWithGoogle, signUpWithEmail, signInWithPassword } from './supabaseClient'
+import BusStopTrace from '../assets/bus_stop_trace.svg'
 
 
 
@@ -43,6 +42,7 @@ const LoginScreen = () => {
       setError(error.message)
     }
   }
+
 
   const handleEmailChange = (text: string) => {
     const sanitized = sanitizeInput(text)
@@ -117,8 +117,7 @@ const LoginScreen = () => {
   return (
     <LinearGradient colors={['#667eea', '#764ba2']} style={styles.container}>
       <View style={styles.backgroundContainer}>
-        <SvgUri
-          uri={Asset.fromModule(require('../assets/bus_stop_trace.svg')).uri}
+        <BusStopTrace
           width={120}
           height={120}
           style={styles.backgroundImage}
