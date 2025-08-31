@@ -126,3 +126,16 @@ Step 14: Committed changes for commented-out test cases for extensions
 - Checked git status to identify modified test files
 - Added modified test files and steps_taken.md to git
 - Committed with descriptive message
+
+Step 15: Added email and password authentication option to LoginScreen
+- Added signUpWithEmail and signInWithPassword functions to supabaseClient.ts
+- Updated LoginScreen.tsx to include toggle between Google and Email/Password auth
+- Implemented sign up form with email, password, and confirm password fields
+- Implemented sign in form with email and password fields
+- Added form validation for email format and password length (minimum 6 characters)
+- Added password confirmation validation for sign up
+- Integrated Supabase auth methods with proper error handling
+- Added user-friendly UI with toggle buttons and form switching
+- Maintained compatibility with existing Google auth flow
+- Added comprehensive error display and success alerts
+- Ensured responsive design with proper styling
