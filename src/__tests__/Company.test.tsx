@@ -96,4 +96,110 @@ describe('Company Components', () => {
       });
     });
   });
+
+  // Commented-out test cases for future extensions
+
+  /*
+  // Ticket 3: Input Validation - Add comprehensive validation for all forms
+  describe('Input Validation', () => {
+    describe('CompanyForm Validation', () => {
+      it('validates required company name field', async () => {
+        const { getByText, getByPlaceholderText } = render(<CompanyForm navigation={mockNavigation} route={{ params: {} }} />);
+
+        const nameInput = getByPlaceholderText('Name');
+        const saveButton = getByText('Save');
+
+        // Test empty name validation
+        fireEvent.changeText(nameInput, '');
+        fireEvent.press(saveButton);
+
+        // Should show validation error for empty name
+        await waitFor(() => {
+          expect(getByText('Company name is required')).toBeTruthy();
+        });
+      });
+
+      it('validates email format', async () => {
+        const { getByText, getByPlaceholderText } = render(<CompanyForm navigation={mockNavigation} route={{ params: {} }} />);
+
+        const nameInput = getByPlaceholderText('Name');
+        const emailInput = getByPlaceholderText('Email');
+        const saveButton = getByText('Save');
+
+        fireEvent.changeText(nameInput, 'Test Company');
+        fireEvent.changeText(emailInput, 'invalid-email');
+        fireEvent.press(saveButton);
+
+        await waitFor(() => {
+          expect(getByText('Please enter a valid email address')).toBeTruthy();
+        });
+      });
+
+      it('validates transport type selection', async () => {
+        const { getByText, getByPlaceholderText } = render(<CompanyForm navigation={mockNavigation} route={{ params: {} }} />);
+
+        const nameInput = getByPlaceholderText('Name');
+        const emailInput = getByPlaceholderText('Email');
+        const transportInput = getByPlaceholderText('Transport Type');
+        const saveButton = getByText('Save');
+
+        fireEvent.changeText(nameInput, 'Test Company');
+        fireEvent.changeText(emailInput, 'test@example.com');
+        fireEvent.changeText(transportInput, 'Invalid Transport');
+        fireEvent.press(saveButton);
+
+        await waitFor(() => {
+          expect(getByText('Please select a valid transport type')).toBeTruthy();
+        });
+      });
+
+      it('validates company name length limits', async () => {
+        const { getByText, getByPlaceholderText } = render(<CompanyForm navigation={mockNavigation} route={{ params: {} }} />);
+
+        const nameInput = getByPlaceholderText('Name');
+        const saveButton = getByText('Save');
+
+        // Test name too long
+        const longName = 'A'.repeat(101); // Assuming 100 char limit
+        fireEvent.changeText(nameInput, longName);
+        fireEvent.press(saveButton);
+
+        await waitFor(() => {
+          expect(getByText('Company name must be less than 100 characters')).toBeTruthy();
+        });
+      });
+
+      it('validates notes field length', async () => {
+        const { getByText, getByPlaceholderText } = render(<CompanyForm navigation={mockNavigation} route={{ params: {} }} />);
+
+        const nameInput = getByPlaceholderText('Name');
+        const emailInput = getByPlaceholderText('Email');
+        const notesInput = getByPlaceholderText('Notes');
+        const saveButton = getByText('Save');
+
+        fireEvent.changeText(nameInput, 'Test Company');
+        fireEvent.changeText(emailInput, 'test@example.com');
+        fireEvent.changeText(notesInput, 'A'.repeat(501)); // Assuming 500 char limit
+        fireEvent.press(saveButton);
+
+        await waitFor(() => {
+          expect(getByText('Notes must be less than 500 characters')).toBeTruthy();
+        });
+      });
+    });
+
+    describe('QuickReporting Validation', () => {
+      it('validates issue description for "Other" type', async () => {
+        // Test validation for custom issue descriptions
+        // This would be in QuickReporting component
+        // Commented out until validation is implemented
+      });
+
+      it('validates route selection before sending', async () => {
+        // Ensure route is selected before allowing email send
+        // Commented out until implementation
+      });
+    });
+  });
+  */
 });
