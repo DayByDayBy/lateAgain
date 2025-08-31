@@ -139,3 +139,10 @@ Step 15: Added email and password authentication option to LoginScreen
 - Maintained compatibility with existing Google auth flow
 - Added comprehensive error display and success alerts
 - Ensured responsive design with proper styling
+
+Step 16: Implemented environment variables for Supabase credentials
+- Created .env file with EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY using provided values
+- Updated src/supabaseClient.ts to use process.env.EXPO_PUBLIC_SUPABASE_URL and process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
+- Added .env to .gitignore to prevent committing sensitive data
+- Verified app runs successfully with environment variables (no runtime errors observed)
+- Committed changes excluding .env file
