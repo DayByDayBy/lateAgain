@@ -243,3 +243,5 @@ Step 26: Fixed bundling error by removing unnecessary babel plugin for SVG trans
 - Restarted Expo server with --clear flag
 - Bundling should now succeed without errors
 - App should load at localhost:8082
+
+Step 27: Removed bus stop SVG from LoginScreen.tsx to fix iOS development server issues, reverted metro.config.js to default, executed npm run ios successfully, app loads on iOS without SVG.
