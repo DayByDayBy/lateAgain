@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, Text, TouchableOpacity, TextInput, Alert, StyleSheet, Dimensions } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { signInWithGoogle, signUpWithEmail, signInWithPassword } from './supabaseClient'
@@ -17,6 +17,7 @@ const LoginScreen = () => {
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [confirmPasswordError, setConfirmPasswordError] = useState('')
+
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
