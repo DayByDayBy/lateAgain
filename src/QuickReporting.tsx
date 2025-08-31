@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, Alert, StyleSheet, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './supabaseClient';
 import { sendEmail as sendEmailService, generateEmailSubject } from './emailService';
@@ -35,8 +35,13 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<Route | null>(null);
   const [selectedIssue, setSelectedIssue] = useState<IssueType | null>(null);
+  const [customMessage, setCustomMessage] = useState<string>('');
   const [previewText, setPreviewText] = useState<string>('');
   const [drafts, setDrafts] = useState<any[]>([]);
+  const [companyError, setCompanyError] = useState('');
+  const [routeError, setRouteError] = useState('');
+  const [issueError, setIssueError] = useState('');
+  const [generalError, setGeneralError] = useState('');
 
   useEffect(() => {
     fetchCompanies();
@@ -90,20 +95,42 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
     let text = templates[selectedIssue];
     text = text.replace('[Company Name]', selectedCompany.name);
     text = text.replace('[Route Number]', selectedRoute.route_number.toString());
+    if (selectedIssue === 'Other') {
+      text = text.replace('[Please describe the issue]', customMessage || '[Please describe the issue]');
+    }
     setPreviewText(text);
   };
 
   const sendEmail = async () => {
-    if (!selectedCompany || !selectedRoute || !selectedIssue) return;
+    setGeneralError('');
+    let hasError = false;
+    if (!selectedCompany) {
+      setCompanyError('Please select a company.');
+      hasError = true;
+    }
+    if (!selectedRoute) {
+      setRouteError('Please select a route.');
+      hasError = true;
+    }
+    if (!selectedIssue) {
+      setIssueError('Please select an issue.');
+      hasError = true;
+    }
+    if (selectedIssue === 'Other' && !customMessage.trim()) {
+      setGeneralError('Please provide a description for the issue.');
+      hasError = true;
+    }
+    if (hasError) return;
 
     try {
-      const subject = generateEmailSubject(selectedIssue, selectedRoute.route_number, selectedCompany.name);
+      const subject = generateEmailSubject(selectedIssue!, selectedRoute!.route_number, selectedCompany!.name);
+      const sanitizedText = previewText.trim(); // Sanitize
       await sendEmailService({
-        to: selectedCompany.email,
+        to: selectedCompany!.email,
         subject,
-        text: previewText,
+        text: sanitizedText,
       });
-      Alert.alert('Email Sent', `Email sent to ${selectedCompany.email}`);
+      Alert.alert('Email Sent', `Email sent to ${selectedCompany!.email}`);
     } catch (error: any) {
       console.error('Email send failed:', error);
       // Save to drafts
@@ -112,6 +139,7 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
         company: selectedCompany,
         route: selectedRoute,
         issue: selectedIssue,
+        customMessage: customMessage.trim(),
         previewText,
       };
       const newDrafts = [...drafts, draft];
@@ -154,6 +182,7 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
           <TouchableOpacity
             style={[styles.item, selectedCompany?.id === item.id && styles.selected]}
             onPress={() => setSelectedCompany(item)}
+            accessibilityLabel={`Select company ${item.name}`}
           >
             <Text>{item.name}</Text>
           </TouchableOpacity>
@@ -161,6 +190,7 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
         horizontal
         showsHorizontalScrollIndicator={false}
       />
+      {companyError ? <Text style={styles.errorText}>{companyError}</Text> : null}
 
       {selectedCompany && (
         <>
@@ -172,6 +202,7 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
               <TouchableOpacity
                 style={[styles.item, selectedRoute?.id === item.id && styles.selected]}
                 onPress={() => setSelectedRoute(item)}
+                accessibilityLabel={`Select route ${item.route_number}: ${item.description}`}
               >
                 <Text>Route {item.route_number}: {item.description}</Text>
               </TouchableOpacity>
@@ -179,6 +210,7 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
             horizontal
             showsHorizontalScrollIndicator={false}
           />
+          {routeError ? <Text style={styles.errorText}>{routeError}</Text> : null}
         </>
       )}
 
@@ -192,12 +224,28 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
               <TouchableOpacity
                 style={[styles.item, selectedIssue === item && styles.selected]}
                 onPress={() => setSelectedIssue(item)}
+                accessibilityLabel={`Select ${item} issue`}
               >
                 <Text>{item}</Text>
               </TouchableOpacity>
             )}
             horizontal
             showsHorizontalScrollIndicator={false}
+          />
+          {issueError ? <Text style={styles.errorText}>{issueError}</Text> : null}
+        </>
+      )}
+
+      {selectedIssue === 'Other' && (
+        <>
+          <Text style={styles.label}>Describe the Issue:</Text>
+          <TextInput
+            style={styles.input}
+            value={customMessage}
+            onChangeText={setCustomMessage}
+            placeholder="Please describe the issue"
+            multiline
+            accessibilityLabel="Custom issue description input"
           />
         </>
       )}
@@ -206,7 +254,8 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
         <>
           <Text style={styles.label}>Email Preview:</Text>
           <Text style={styles.preview}>{previewText}</Text>
-          <TouchableOpacity style={styles.sendButton} onPress={sendEmail}>
+          {generalError ? <Text style={styles.errorText}>{generalError}</Text> : null}
+          <TouchableOpacity style={styles.sendButton} onPress={sendEmail} accessibilityLabel="Send email button">
             <Text style={styles.sendButtonText}>Send Email</Text>
           </TouchableOpacity>
         </>
@@ -293,6 +342,19 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+    fontSize: 16,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    marginBottom: 10,
   },
 });
 

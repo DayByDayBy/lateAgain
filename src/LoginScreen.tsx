@@ -9,6 +9,9 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
+  const [emailError, setEmailError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [confirmPasswordError, setConfirmPasswordError] = useState('')
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -16,7 +19,15 @@ const LoginScreen = () => {
   }
 
   const validatePassword = (password: string) => {
-    return password.length >= 6
+    const minLength = 8
+    const hasUpperCase = /[A-Z]/.test(password)
+    const hasLowerCase = /[a-z]/.test(password)
+    const hasNumbers = /\d/.test(password)
+    return password.length >= minLength && hasUpperCase && hasLowerCase && hasNumbers
+  }
+
+  const sanitizeInput = (input: string) => {
+    return input.trim()
   }
 
   const handleGoogleSignIn = async () => {
@@ -27,31 +38,67 @@ const LoginScreen = () => {
     }
   }
 
+  const handleEmailChange = (text: string) => {
+    const sanitized = sanitizeInput(text)
+    setEmail(sanitized)
+    if (sanitized && !validateEmail(sanitized)) {
+      setEmailError('Please enter a valid email address.')
+    } else {
+      setEmailError('')
+    }
+  }
+
+  const handlePasswordChange = (text: string) => {
+    const sanitized = sanitizeInput(text)
+    setPassword(sanitized)
+    if (sanitized && !validatePassword(sanitized)) {
+      setPasswordError('Password must be at least 8 characters, include uppercase, lowercase, and a number.')
+    } else {
+      setPasswordError('')
+    }
+  }
+
+  const handleConfirmPasswordChange = (text: string) => {
+    const sanitized = sanitizeInput(text)
+    setConfirmPassword(sanitized)
+    if (sanitized && sanitized !== password) {
+      setConfirmPasswordError('Passwords do not match.')
+    } else {
+      setConfirmPasswordError('')
+    }
+  }
+
   const handleEmailAuth = async () => {
     setError('')
-    if (!validateEmail(email)) {
-      setError('Please enter a valid email address.')
-      return
+    const sanitizedEmail = sanitizeInput(email)
+    const sanitizedPassword = sanitizeInput(password)
+    const sanitizedConfirm = sanitizeInput(confirmPassword)
+
+    let hasError = false
+    if (!validateEmail(sanitizedEmail)) {
+      setEmailError('Please enter a valid email address.')
+      hasError = true
     }
-    if (!validatePassword(password)) {
-      setError('Password must be at least 6 characters long.')
-      return
+    if (!validatePassword(sanitizedPassword)) {
+      setPasswordError('Password must be at least 8 characters, include uppercase, lowercase, and a number.')
+      hasError = true
     }
-    if (isSignUp && password !== confirmPassword) {
-      setError('Passwords do not match.')
-      return
+    if (isSignUp && sanitizedPassword !== sanitizedConfirm) {
+      setConfirmPasswordError('Passwords do not match.')
+      hasError = true
     }
+    if (hasError) return
 
     try {
       if (isSignUp) {
-        const { error } = await signUpWithEmail(email, password)
+        const { error } = await signUpWithEmail(sanitizedEmail, sanitizedPassword)
         if (error) {
           setError(error.message)
         } else {
           Alert.alert('Success', 'Account created successfully! Please check your email to confirm.')
         }
       } else {
-        const { error } = await signInWithPassword(email, password)
+        const { error } = await signInWithPassword(sanitizedEmail, sanitizedPassword)
         if (error) {
           setError(error.message)
         }
@@ -105,26 +152,32 @@ const LoginScreen = () => {
             style={styles.input}
             placeholder="Email"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={handleEmailChange}
             keyboardType="email-address"
             autoCapitalize="none"
+            accessibilityLabel="Email input field"
           />
+          {emailError ? <Text style={styles.fieldErrorText}>{emailError}</Text> : null}
           <TextInput
             style={styles.input}
             placeholder="Password"
             value={password}
-            onChangeText={setPassword}
+            onChangeText={handlePasswordChange}
             secureTextEntry
+            accessibilityLabel="Password input field"
           />
+          {passwordError ? <Text style={styles.fieldErrorText}>{passwordError}</Text> : null}
           {isSignUp && (
             <TextInput
               style={styles.input}
               placeholder="Confirm Password"
               value={confirmPassword}
-              onChangeText={setConfirmPassword}
+              onChangeText={handleConfirmPasswordChange}
               secureTextEntry
+              accessibilityLabel="Confirm password input field"
             />
           )}
+          {isSignUp && confirmPasswordError ? <Text style={styles.fieldErrorText}>{confirmPasswordError}</Text> : null}
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
@@ -213,6 +266,11 @@ const styles = StyleSheet.create({
     color: 'red',
     marginBottom: 10,
     textAlign: 'center',
+  },
+  fieldErrorText: {
+    color: 'red',
+    fontSize: 14,
+    marginBottom: 5,
   },
 })
 
