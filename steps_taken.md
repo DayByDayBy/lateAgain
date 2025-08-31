@@ -186,3 +186,12 @@ Step 19: Implemented welcoming design improvements for LoginScreen.tsx
 - Ensured responsive design with fixed max-width for web compatibility
 - Maintained accessibility with proper labels and error handling
 - All changes work on web and maintain responsiveness
+Step 20: Fixed bus stop SVG display issue in LoginScreen
+- Verified react-native-svg is installed (version 15.11.2)
+- Read LoginScreen.tsx and found Image component trying to load SVG incorrectly
+- Read bus_stop_trace.svg content (full SVG XML)
+- Replaced Image with SvgXml component using SVG XML string
+- Set proper width (120), height (120), and opacity (0.15)
+- Maintained absolute positioning in top left corner as background framing
+- SVG now displays correctly without blocking UI elements
+- App running on web at port 8082, changes testable immediately
