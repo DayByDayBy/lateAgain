@@ -48,7 +48,7 @@ describe('Auth Components', () => {
   describe('LoginScreen', () => {
     it('renders correctly', () => {
       const { getByText } = render(<LoginScreen />)
-      expect(getByText('Welcome to Late Again')).toBeTruthy()
+      expect(getByText('Late Again')).toBeTruthy()
       expect(getByText('Sign in with Google')).toBeTruthy()
     })
 
@@ -68,7 +68,7 @@ describe('Auth Components', () => {
 
     it('renders correctly with user', () => {
       const { getByText } = render(<HomeScreen route={mockRoute} navigation={mockNavigation} />)
-      expect(getByText('Welcome to Late Again')).toBeTruthy()
+      expect(getByText('Late Again')).toBeTruthy()
       expect(getByText('Logged in as: test@example.com')).toBeTruthy()
       expect(getByText('Sign Out')).toBeTruthy()
     })

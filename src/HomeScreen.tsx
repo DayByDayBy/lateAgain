@@ -16,13 +16,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ route, navigation }) => {
     if (error) {
       console.error('Error signing out:', error.message)
     }
-  }
+  } 
 
   return (
     <LinearGradient colors={['#667eea', '#764ba2']} style={styles.container}>
       <View style={styles.content}>
         <MaterialIcons name="home" size={60} color="#fff" style={styles.icon} />
-        <Text style={styles.title}>Welcome to Late Again</Text>
+        <Text style={styles.title}>Late Again</Text>
         <Text style={styles.email}>Logged in as: {user?.email}</Text>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CompanyList')}>
           <MaterialIcons name="business" size={20} color="#fff" />

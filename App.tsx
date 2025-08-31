@@ -33,7 +33,7 @@ export default function App() {
             <Stack.Screen name="QuickReporting" component={QuickReporting} />
           </>
         ) : (
-          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="sign in to send" component={LoginScreen} />
         )}
       </Stack.Navigator>
       <StatusBar style="auto" />

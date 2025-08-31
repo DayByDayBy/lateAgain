@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './supabaseClient';
+import { sendEmail as sendEmailService, generateEmailSubject } from './emailService';
 
 interface Company {
   id: string;
@@ -93,21 +94,18 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
   };
 
   const sendEmail = async () => {
-    if (!selectedCompany) return;
+    if (!selectedCompany || !selectedRoute || !selectedIssue) return;
+
     try {
-      // Simulate sending with timeout
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate success or failure
-          if (Math.random() > 0.5) { // 50% chance of failure for testing
-            resolve(true);
-          } else {
-            reject(new Error('Send failed'));
-          }
-        }, 2000); // 2s for testing, change to 60000 for 60s
+      const subject = generateEmailSubject(selectedIssue, selectedRoute.route_number, selectedCompany.name);
+      await sendEmailService({
+        to: selectedCompany.email,
+        subject,
+        text: previewText,
       });
       Alert.alert('Email Sent', `Email sent to ${selectedCompany.email}`);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Email send failed:', error);
       // Save to drafts
       const draft = {
         id: Date.now().toString(),
@@ -125,15 +123,20 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
 
   const resendDraft = async (draft: any) => {
     try {
-      // Simulate resend
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const subject = generateEmailSubject(draft.issue, draft.route.route_number, draft.company.name);
+      await sendEmailService({
+        to: draft.company.email,
+        subject,
+        text: draft.previewText,
+      });
       Alert.alert('Resent', `Email resent to ${draft.company.email}`);
       // Remove from drafts
       const newDrafts = drafts.filter(d => d.id !== draft.id);
       setDrafts(newDrafts);
       await AsyncStorage.setItem('drafts', JSON.stringify(newDrafts));
-    } catch (error) {
-      Alert.alert('Resend Failed', 'Failed to resend.');
+    } catch (error: any) {
+      console.error('Resend failed:', error);
+      Alert.alert('Resend Failed', 'Failed to resend email.');
     }
   };
 

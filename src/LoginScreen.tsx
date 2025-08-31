@@ -63,7 +63,7 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Late Again</Text>
+      <Text style={styles.title}>Late Again</Text>
 
       <View style={styles.toggleContainer}>
         <TouchableOpacity
