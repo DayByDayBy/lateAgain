@@ -195,3 +195,5 @@ Step 20: Fixed bus stop SVG display issue in LoginScreen
 - Maintained absolute positioning in top left corner as background framing
 - SVG now displays correctly without blocking UI elements
 - App running on web at port 8082, changes testable immediately
+
+Step 21: Replaced SvgXml with Image component in LoginScreen.tsx using require for SVG file, maintained positioning styles
