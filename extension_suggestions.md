@@ -56,3 +56,23 @@
 
 - **Ticket 17: Offline Support**
   Implement offline functionality to allow basic operations without internet connectivity.
+- **Ticket 18: Enhanced Error Handling**  
+  Implement error boundaries and provide specific error messages to users based on code review recommendations.
+
+- **Ticket 19: Success Feedback with Toasts**  
+  Add toast notifications for successful actions to improve user experience.
+
+- **Ticket 20: TypeScript Navigation Types**  
+  Define proper TypeScript types for the navigation stack to ensure type safety.
+
+- **Ticket 21: Consistent Component Styling**  
+  Refactor all components to use StyleSheet.create instead of inline styles.
+
+- **Ticket 22: Test File Cleanup**  
+  Remove commented-out code from test files to improve code readability.
+
+- **Ticket 23: Comprehensive README**  
+  Create detailed README.md with project description, setup instructions, and development guidelines.
+
+- **Ticket 24: Repository Cleanup**  
+  Clean up development artifacts like dev_diary.md and steps_taken.md by moving to .gitignore or removing from repository.
