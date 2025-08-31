@@ -54,3 +54,18 @@ MVP completed with core features. Ready for extensions.
 ## Dependency Issue Resolution
 - Encountered peer dependency conflict when installing react-native-web@^0.20.0 and @expo/metro-runtime@~5.0.4 due to React version mismatch (React 19.0.0 vs required 19.1.1 for react-dom).
 - Resolved by installing with --legacy-peer-deps flag.
+
+### Step 19: UI Design Improvements
+- Enhanced LoginScreen.tsx with welcoming design improvements:
+  - Applied beautiful gradient background (purple to blue) using LinearGradient
+  - Added bus_stop_trace.svg as subtle background framing in top left corner
+  - Adjusted Google button width to 80% with enhanced styling and shadows
+  - Improved typography with larger, bold title and better font weights
+  - Enhanced button styles with rounded corners, shadows, and better spacing
+  - Updated toggle buttons with glassmorphism effect and smooth transitions
+  - Improved form container with semi-transparent background and better padding
+  - Enhanced input fields with better styling and transparency
+  - Ensured responsive design with fixed max-width for web compatibility
+- Current project status: MVP with core features complete, UI significantly improved
+- App running successfully on web (port 8082) with no runtime errors
+- Next steps: Complete remaining todos (record steps, git commit) and consider production readiness features

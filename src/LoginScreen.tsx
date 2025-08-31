@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, TextInput, Alert, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, Alert, StyleSheet, Dimensions, Image } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
 import { signInWithGoogle, signUpWithEmail, signInWithPassword } from './supabaseClient'
 
 const LoginScreen = () => {
+  const { width: screenWidth } = Dimensions.get('window')
   const [authMethod, setAuthMethod] = useState<'google' | 'email'>('google')
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
@@ -109,7 +111,10 @@ const LoginScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <LinearGradient colors={['#667eea', '#764ba2']} style={styles.container}>
+      <View style={styles.backgroundContainer}>
+        <Image source={require('../assets/bus_stop_trace.svg')} style={styles.backgroundImage} />
+      </View>
       <Text style={styles.title}>Late Again</Text>
 
       <View style={styles.toggleContainer}>
@@ -128,7 +133,7 @@ const LoginScreen = () => {
       </View>
 
       {authMethod === 'google' ? (
-        <TouchableOpacity style={styles.button} onPress={handleGoogleSignIn}>
+        <TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn}>
           <Text style={styles.buttonText}>Sign in with Google</Text>
         </TouchableOpacity>
       ) : (
@@ -186,7 +191,7 @@ const LoginScreen = () => {
           </TouchableOpacity>
         </View>
       )}
-    </View>
+    </LinearGradient>
   )
 }
 
@@ -195,72 +200,130 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 20,
+    padding: 30,
+  },
+  backgroundContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 150,
+    height: 150,
+    opacity: 0.1,
+  },
+  backgroundImage: {
+    width: 120,
+    height: 120,
+    opacity: 0.15,
   },
   title: {
-    fontSize: 24,
-    marginBottom: 20,
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    color: '#333',
   },
   toggleContainer: {
     flexDirection: 'row',
-    marginBottom: 20,
+    marginBottom: 30,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 25,
+    padding: 5,
   },
   toggleButton: {
     flex: 1,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    padding: 12,
+    borderRadius: 20,
     alignItems: 'center',
   },
   activeToggle: {
-    backgroundColor: '#4285F4',
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
   },
   toggleText: {
     fontSize: 16,
-    color: '#000',
+    fontWeight: '600',
+    color: '#333',
   },
   button: {
     backgroundColor: '#4285F4',
-    padding: 10,
-    borderRadius: 5,
+    padding: 15,
+    borderRadius: 10,
     width: '100%',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  googleButton: {
+    backgroundColor: '#4285F4',
+    padding: 15,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
+    fontWeight: 'bold',
   },
   formContainer: {
     width: '100%',
-    maxWidth: 300,
+    maxWidth: 400,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderRadius: 15,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 8,
   },
   formToggle: {
     flexDirection: 'row',
-    marginBottom: 20,
+    marginBottom: 25,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    borderRadius: 25,
+    padding: 5,
   },
   formToggleButton: {
     flex: 1,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    padding: 12,
+    borderRadius: 20,
     alignItems: 'center',
   },
   activeFormToggle: {
-    backgroundColor: '#4285F4',
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
   },
   formToggleText: {
     fontSize: 16,
-    color: '#000',
+    fontWeight: '600',
+    color: '#333',
   },
   input: {
     width: '100%',
-    padding: 10,
+    padding: 15,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginBottom: 10,
+    borderColor: 'rgba(255,255,255,0.5)',
+    borderRadius: 10,
+    marginBottom: 15,
     fontSize: 16,
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    color: '#333',
   },
   errorText: {
     color: 'red',

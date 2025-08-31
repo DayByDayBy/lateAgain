@@ -174,3 +174,15 @@ Step 18: Implemented input validation and sanitization for all forms (Ticket 3)
 - Added StyleSheet styles for error text and input fields where needed
 - All validation prevents invalid data submission and provides clear UX feedback
 - All tests pass with mocked SendGrid API
+Step 19: Implemented welcoming design improvements for LoginScreen.tsx
+- Adjusted Google button width to 80% with enhanced styling and shadows
+- Added bus_stop_trace.svg as background framing in top left corner with opacity
+- Applied beautiful gradient background (purple to blue) using LinearGradient
+- Improved typography with larger, bold title and better font weights throughout
+- Enhanced button styles with rounded corners, shadows, and better spacing
+- Updated toggle buttons with glassmorphism effect and smooth transitions
+- Improved form container with semi-transparent background and better padding
+- Enhanced input fields with better styling and transparency effects
+- Ensured responsive design with fixed max-width for web compatibility
+- Maintained accessibility with proper labels and error handling
+- All changes work on web and maintain responsiveness
