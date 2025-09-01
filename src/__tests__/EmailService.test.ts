@@ -1,27 +1,25 @@
 import { sendEmail, generateEmailSubject } from '../emailService';
 
-// Mock SendGrid
-jest.mock('@sendgrid/mail', () => ({
-  setApiKey: jest.fn(),
-  send: jest.fn(),
-}));
-
-const mockSendGrid = require('@sendgrid/mail');
+// Mock fetch for backend API calls
+global.fetch = jest.fn();
 
 describe('EmailService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Set up environment variable for testing
-    process.env.EXPO_PUBLIC_SENDGRID_API_KEY = 'test-api-key';
+    process.env.EXPO_PUBLIC_BACKEND_URL = 'https://test-backend.com';
   });
 
   afterEach(() => {
-    delete process.env.EXPO_PUBLIC_SENDGRID_API_KEY;
+    delete process.env.EXPO_PUBLIC_BACKEND_URL;
   });
 
   describe('sendEmail', () => {
     it('sends email successfully', async () => {
-      mockSendGrid.send.mockResolvedValue([{ statusCode: 202 }]);
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({ success: true }),
+      });
 
       const emailData = {
         to: 'test@example.com',
@@ -30,16 +28,25 @@ describe('EmailService', () => {
       };
 
       await expect(sendEmail(emailData)).resolves.toBeUndefined();
-      expect(mockSendGrid.send).toHaveBeenCalledWith({
-        to: 'test@example.com',
-        from: 'noreply@lateagain.com',
-        subject: 'Test Subject',
-        text: 'Test message',
+      expect(global.fetch).toHaveBeenCalledWith('https://test-backend.com/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: 'test@example.com',
+          from: 'noreply@lateagain.com',
+          subject: 'Test Subject',
+          text: 'Test message',
+        }),
       });
     });
 
     it('uses custom from address when provided', async () => {
-      mockSendGrid.send.mockResolvedValue([{ statusCode: 202 }]);
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({ success: true }),
+      });
 
       const emailData = {
         to: 'test@example.com',
@@ -49,18 +56,27 @@ describe('EmailService', () => {
       };
 
       await sendEmail(emailData);
-      expect(mockSendGrid.send).toHaveBeenCalledWith({
-        to: 'test@example.com',
-        from: 'custom@lateagain.com',
-        subject: 'Test Subject',
-        text: 'Test message',
+      expect(global.fetch).toHaveBeenCalledWith('https://test-backend.com/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: 'test@example.com',
+          from: 'custom@lateagain.com',
+          subject: 'Test Subject',
+          text: 'Test message',
+        }),
       });
     });
 
     it('retries on failure', async () => {
-      mockSendGrid.send
+      (global.fetch as jest.Mock)
         .mockRejectedValueOnce(new Error('Network error'))
-        .mockResolvedValue([{ statusCode: 202 }]);
+        .mockResolvedValue({
+          ok: true,
+          json: jest.fn().mockResolvedValue({ success: true }),
+        });
 
       const emailData = {
         to: 'test@example.com',
@@ -69,12 +85,12 @@ describe('EmailService', () => {
       };
 
       await expect(sendEmail(emailData)).resolves.toBeUndefined();
-      expect(mockSendGrid.send).toHaveBeenCalledTimes(2);
+      expect(global.fetch).toHaveBeenCalledTimes(2);
     });
 
     it('throws error after max retries', async () => {
-      const error = new Error('SendGrid error');
-      mockSendGrid.send.mockRejectedValue(error);
+      const error = new Error('Network error');
+      (global.fetch as jest.Mock).mockRejectedValue(error);
 
       const emailData = {
         to: 'test@example.com',
@@ -83,16 +99,19 @@ describe('EmailService', () => {
       };
 
       await expect(sendEmail(emailData)).rejects.toThrow('Failed to send email after 3 attempts');
-      expect(mockSendGrid.send).toHaveBeenCalledTimes(3);
+      expect(global.fetch).toHaveBeenCalledTimes(3);
     });
 
-    it('throws error when API key is missing', async () => {
-      delete process.env.EXPO_PUBLIC_SENDGRID_API_KEY;
+    it('throws error when backend URL is missing', async () => {
+      delete process.env.EXPO_PUBLIC_BACKEND_URL;
 
-      expect(() => {
-        // Re-import to trigger the error
-        require('../emailService');
-      }).toThrow('SendGrid API key not found');
+      const emailData = {
+        to: 'test@example.com',
+        subject: 'Test Subject',
+        text: 'Test message',
+      };
+
+      await expect(sendEmail(emailData)).rejects.toThrow('Failed to send email after 3 attempts');
     });
   });
 

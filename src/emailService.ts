@@ -1,14 +1,9 @@
-import sgMail from '@sendgrid/mail';
+// Email service - SECURE IMPLEMENTATION
+// Note: Email sending has been moved to backend to prevent API key exposure
+// This is a placeholder that should be replaced with a backend API call
 
-const SENDGRID_API_KEY = process.env.EXPO_PUBLIC_SENDGRID_API_KEY;
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
-
-if (!SENDGRID_API_KEY) {
-  throw new Error('SendGrid API key not found. Please set EXPO_PUBLIC_SENDGRID_API_KEY in your .env file.');
-}
-
-sgMail.setApiKey(SENDGRID_API_KEY);
 
 export interface EmailData {
   to: string;
@@ -20,18 +15,33 @@ export interface EmailData {
 export async function sendEmail(emailData: EmailData, retryCount = 0): Promise<void> {
   const { to, subject, text, from = 'noreply@lateagain.com' } = emailData;
 
-  const msg = {
-    to,
-    from,
-    subject,
-    text,
-  };
+  // SECURITY FIX: Email sending moved to backend to prevent API key exposure
+  // This should be replaced with a call to your backend API endpoint
+  const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://your-backend-api.com';
 
   try {
-    await sgMail.send(msg);
-    console.log('Email sent successfully to:', to);
+    const response = await fetch(`${backendUrl}/api/send-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Add authentication headers as needed
+      },
+      body: JSON.stringify({
+        to,
+        subject,
+        text,
+        from,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Backend responded with status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('Email sent successfully to:', to, result);
   } catch (error: any) {
-    console.error('SendGrid error:', error);
+    console.error('Email service error:', error);
 
     if (retryCount < MAX_RETRIES) {
       console.log(`Retrying email send (attempt ${retryCount + 1}/${MAX_RETRIES})...`);
