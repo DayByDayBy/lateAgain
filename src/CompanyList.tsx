@@ -16,10 +16,18 @@ interface Props {
 
 const CompanyList: React.FC<Props> = ({ navigation }) => {
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [userRole, setUserRole] = useState<'admin' | 'user' | null>(null);
 
   useEffect(() => {
     fetchCompanies();
+    fetchUserRole();
   }, []);
+
+  const fetchUserRole = async () => {
+    const { getUserProfile } = await import('./supabaseClient');
+    const profile = await getUserProfile();
+    setUserRole(profile?.role || null);
+  };
 
   const fetchCompanies = async () => {
     const { data, error } = await supabase.from('companies').select('*');
@@ -48,12 +56,14 @@ const CompanyList: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1, padding: 20 }}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('CompanyForm')}
-        style={{ backgroundColor: 'blue', padding: 10, marginBottom: 20 }}
-      >
-        <Text style={{ color: 'white' }}>Add Company</Text>
-      </TouchableOpacity>
+      {userRole === 'admin' && (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('CompanyForm')}
+          style={{ backgroundColor: 'blue', padding: 10, marginBottom: 20 }}
+        >
+          <Text style={{ color: 'white' }}>Add Company</Text>
+        </TouchableOpacity>
+      )}
       <FlatList
         data={companies}
         keyExtractor={(item) => item.id}
@@ -61,12 +71,16 @@ const CompanyList: React.FC<Props> = ({ navigation }) => {
           <View style={{ padding: 10, borderBottomWidth: 1 }}>
             <Text>{item.name}</Text>
             <Text>{item.email}</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('CompanyForm', { company: item })}>
-              <Text style={{ color: 'blue' }}>Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleDelete(item.id)}>
-              <Text style={{ color: 'red' }}>Delete</Text>
-            </TouchableOpacity>
+            {userRole === 'admin' && (
+              <>
+                <TouchableOpacity onPress={() => navigation.navigate('CompanyForm', { company: item })}>
+                  <Text style={{ color: 'blue' }}>Edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDelete(item.id)}>
+                  <Text style={{ color: 'red' }}>Delete</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         )}
       />

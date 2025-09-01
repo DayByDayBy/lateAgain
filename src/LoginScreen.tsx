@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, TouchableOpacity, TextInput, Alert, StyleSheet, Dimensions } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
-import { signInWithGoogle, signUpWithEmail, signInWithPassword } from './supabaseClient'
+import { signInWithGoogle, signUpWithEmail, signInWithPassword, createUserProfile } from './supabaseClient'
 // import BusStopTrace from '../assets/bus_stop_trace.svg'
 
 
@@ -102,7 +102,15 @@ const LoginScreen = () => {
         if (error) {
           setError(error.message)
         } else {
-          Alert.alert('Success', 'Account created successfully! Please check your email to confirm.')
+          // Create user profile after signup
+          try {
+            await createUserProfile('user') // Default to user role
+            Alert.alert('Success', 'Account created successfully! Please check your email to confirm.')
+          } catch (profileError) {
+            console.error('Error creating user profile:', profileError)
+            // Still show success for signup, profile can be created later
+            Alert.alert('Success', 'Account created successfully! Please check your email to confirm.')
+          }
         }
       } else {
         const { error } = await signInWithPassword(sanitizedEmail, sanitizedPassword)

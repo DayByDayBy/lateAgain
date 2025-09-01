@@ -269,3 +269,15 @@ Step 31: URGENT SECURITY FIX - Removed SendGrid API key from client-side code to
 Step 32: Implemented secure email sending using Supabase Edge Functions - created send-email function, deployed to Supabase, set SendGrid API key as secret, updated frontend to call edge function.
 
 Step 33: Ran comprehensive test suite - identified and partially fixed test issues including AsyncStorage mocks, Supabase client mocks, and EmailService test expectations. Several tests still failing due to mock configuration issues.
+
+Step 34: Implemented comprehensive input validation and sanitization across all components - created shared validationUtils.ts, enhanced QuickReporting validation with length limits and better error messages, added server-side validation to Supabase Edge Function with security checks for XSS and SQL injection prevention.
+
+Step 35: Analyzed current database schema and RLS policies, clarified app purpose with user, refined RLS plan for bus delay reporting app with admin vs regular user access control
+
+Step 36: Implemented Row-Level Security for bus delay reporting app
+- Created new Supabase migration file 002_add_user_profiles_and_rls.sql with user_profiles table, RLS policies for companies and routes tables
+- Added getUserProfile and createUserProfile functions to supabaseClient.ts
+- Updated CompanyList.tsx to conditionally show admin-only buttons based on user role
+- Modified LoginScreen.tsx to create user profile after successful signup
+- Updated App.tsx to automatically create user profile on authentication if it doesn't exist
+- Migration ready for deployment with npx supabase db push (requires project linking)

@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { supabase } from './src/supabaseClient';
+import { supabase, getUserProfile, createUserProfile } from './src/supabaseClient';
 import LoginScreen from './src/LoginScreen';
 import HomeScreen from './src/HomeScreen';
 import CompanyList from './src/CompanyList';
@@ -15,8 +15,19 @@ export default function App() {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        // Check if user profile exists, if not create one
+        const profile = await getUserProfile();
+        if (!profile) {
+          try {
+            await createUserProfile('user');
+          } catch (error) {
+            console.error('Error creating user profile:', error);
+          }
+        }
+      }
     });
 
     return () => subscription.unsubscribe();

@@ -101,26 +101,53 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
     setPreviewText(text);
   };
 
-  const sendEmail = async () => {
-    setGeneralError('');
+  const validateForm = () => {
     let hasError = false;
+
     if (!selectedCompany) {
       setCompanyError('Please select a company.');
       hasError = true;
+    } else {
+      setCompanyError('');
     }
+
     if (!selectedRoute) {
       setRouteError('Please select a route.');
       hasError = true;
+    } else {
+      setRouteError('');
     }
+
     if (!selectedIssue) {
       setIssueError('Please select an issue.');
       hasError = true;
+    } else {
+      setIssueError('');
     }
-    if (selectedIssue === 'Other' && !customMessage.trim()) {
-      setGeneralError('Please provide a description for the issue.');
-      hasError = true;
+
+    if (selectedIssue === 'Other') {
+      const trimmedMessage = customMessage.trim();
+      if (!trimmedMessage) {
+        setGeneralError('Please provide a description for the issue.');
+        hasError = true;
+      } else if (trimmedMessage.length < 10) {
+        setGeneralError('Please provide a more detailed description (at least 10 characters).');
+        hasError = true;
+      } else if (trimmedMessage.length > 500) {
+        setGeneralError('Description is too long (maximum 500 characters).');
+        hasError = true;
+      } else {
+        setGeneralError('');
+      }
+    } else {
+      setGeneralError('');
     }
-    if (hasError) return;
+
+    return !hasError;
+  };
+
+  const sendEmail = async () => {
+    if (!validateForm()) return;
 
     try {
       const subject = generateEmailSubject(selectedIssue!, selectedRoute!.route_number, selectedCompany!.name);

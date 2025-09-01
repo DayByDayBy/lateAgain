@@ -43,3 +43,37 @@ export const signInWithPassword = async (email: string, password: string) => {
 export const getCurrentUser = () => {
   return supabase.auth.getUser()
 }
+
+export const getUserProfile = async () => {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .select('*')
+    .eq('user_id', user.id)
+    .single()
+
+  if (error) {
+    console.error('Error fetching user profile:', error)
+    return null
+  }
+
+  return data
+}
+
+export const createUserProfile = async (role: 'admin' | 'user' = 'user', companyId?: string) => {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('No authenticated user')
+
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .insert({
+      user_id: user.id,
+      role,
+      company_id: companyId
+    })
+
+  if (error) throw error
+  return data
+}

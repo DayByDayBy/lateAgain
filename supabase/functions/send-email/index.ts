@@ -35,9 +35,53 @@ serve(async (req) => {
     // Get email data from request
     const { to, subject, text, from } = await req.json()
 
+    // Server-side validation
+    const validationErrors: string[] = []
+
     // Validate required fields
-    if (!to || !subject || !text) {
-      throw new Error('Missing required fields: to, subject, text')
+    if (!to || typeof to !== 'string') {
+      validationErrors.push('Recipient email is required')
+    }
+    if (!subject || typeof subject !== 'string') {
+      validationErrors.push('Subject is required')
+    }
+    if (!text || typeof text !== 'string') {
+      validationErrors.push('Email text is required')
+    }
+
+    // Validate email format
+    if (to) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(to.trim())) {
+        validationErrors.push('Invalid recipient email format')
+      }
+    }
+
+    // Validate lengths
+    if (subject && subject.length > 200) {
+      validationErrors.push('Subject is too long (max 200 characters)')
+    }
+    if (text && text.length > 5000) {
+      validationErrors.push('Email text is too long (max 5000 characters)')
+    }
+
+    // Security validation - check for potentially dangerous content
+    const dangerousPatterns = [
+      /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+      /javascript:/gi,
+      /data:\s*text\/html/gi,
+    ]
+
+    const checkContent = [to, subject, text, from].filter(Boolean).join(' ')
+    for (const pattern of dangerousPatterns) {
+      if (pattern.test(checkContent)) {
+        validationErrors.push('Email content contains potentially unsafe content')
+        break
+      }
+    }
+
+    if (validationErrors.length > 0) {
+      throw new Error(`Validation failed: ${validationErrors.join(', ')}`)
     }
 
     // Get SendGrid API key from environment
