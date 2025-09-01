@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Alert, StyleSheet, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, Alert, StyleSheet, TextInput, AccessibilityInfo } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './supabaseClient';
 import { sendEmail as sendEmailService, generateEmailSubject } from './emailService';
@@ -42,6 +42,7 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
   const [routeError, setRouteError] = useState('');
   const [issueError, setIssueError] = useState('');
   const [generalError, setGeneralError] = useState('');
+  const [focusedItem, setFocusedItem] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCompanies();
@@ -158,6 +159,7 @@ const QuickReporting: React.FC<Props> = ({ navigation }) => {
         text: sanitizedText,
       });
       Alert.alert('Email Sent', `Email sent to ${selectedCompany!.email}`);
+      AccessibilityInfo.announceForAccessibility('Email sent successfully.');
     } catch (error: any) {
       console.error('Email send failed:', error);
       // Save to drafts
@@ -373,15 +375,24 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    padding: 10,
+    padding: 15,
     marginBottom: 10,
     borderRadius: 5,
     fontSize: 16,
+    minHeight: 44,
+  },
+  focusedInput: {
+    borderColor: '#007bff',
+    borderWidth: 2,
   },
   errorText: {
     color: 'red',
     fontSize: 14,
     marginBottom: 10,
+  },
+  focusedItem: {
+    borderWidth: 2,
+    borderColor: '#000',
   },
 });
 

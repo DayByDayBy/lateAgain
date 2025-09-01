@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, TouchableOpacity, TextInput, Alert, StyleSheet, Dimensions } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, Alert, StyleSheet, Dimensions, AccessibilityInfo } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { signInWithGoogle, signUpWithEmail, signInWithPassword, createUserProfile } from './supabaseClient'
 // import BusStopTrace from '../assets/bus_stop_trace.svg'
@@ -17,6 +17,7 @@ const LoginScreen = () => {
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [confirmPasswordError, setConfirmPasswordError] = useState('')
+  const [focusedField, setFocusedField] = useState<string | null>(null)
 
 
   const validateEmail = (email: string) => {
@@ -321,6 +322,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: 'rgba(255,255,255,0.8)',
     color: '#333',
+    minHeight: 44,
+  },
+  focusedInput: {
+    borderColor: '#007bff',
+    borderWidth: 2,
   },
   errorText: {
     color: 'red',

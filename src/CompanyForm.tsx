@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, AccessibilityInfo } from 'react-native';
 import { supabase } from './supabaseClient';
 
 interface Company {
@@ -26,6 +26,7 @@ const CompanyForm: React.FC<Props> = ({ navigation, route }) => {
   const [emailError, setEmailError] = useState('');
   const [transportTypeError, setTransportTypeError] = useState('');
   const [generalError, setGeneralError] = useState('');
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -118,28 +119,35 @@ const CompanyForm: React.FC<Props> = ({ navigation, route }) => {
         .eq('id', company.id);
       if (error) {
         setGeneralError(error.message);
+        AccessibilityInfo.announceForAccessibility('Failed to update company. Please try again.');
       } else {
         navigation.goBack();
+        AccessibilityInfo.announceForAccessibility('Company updated successfully.');
       }
     } else {
       // Insert
       const { error } = await supabase.from('companies').insert(sanitizedCompany);
       if (error) {
         setGeneralError(error.message);
+        AccessibilityInfo.announceForAccessibility('Failed to save company. Please try again.');
       } else {
         navigation.goBack();
+        AccessibilityInfo.announceForAccessibility('Company saved successfully.');
       }
     }
   };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title} accessibilityRole="header">Company Form</Text>
       <TextInput
         placeholder="Name"
         value={company.name}
         onChangeText={handleNameChange}
-        style={styles.input}
+        style={[styles.input, focusedField === 'name' && styles.focusedInput]}
         accessibilityLabel="Company name input field"
+        onFocus={() => setFocusedField('name')}
+        onBlur={() => setFocusedField(null)}
       />
       {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
       <TextInput
@@ -148,31 +156,41 @@ const CompanyForm: React.FC<Props> = ({ navigation, route }) => {
         onChangeText={handleEmailChange}
         keyboardType="email-address"
         autoCapitalize="none"
-        style={styles.input}
+        style={[styles.input, focusedField === 'email' && styles.focusedInput]}
         accessibilityLabel="Company email input field"
+        onFocus={() => setFocusedField('email')}
+        onBlur={() => setFocusedField(null)}
       />
       {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
       <TextInput
         placeholder="Transport Type"
         value={company.transport_type}
         onChangeText={handleTransportTypeChange}
-        style={styles.input}
+        style={[styles.input, focusedField === 'transport' && styles.focusedInput]}
         accessibilityLabel="Transport type input field"
+        onFocus={() => setFocusedField('transport')}
+        onBlur={() => setFocusedField(null)}
       />
       {transportTypeError ? <Text style={styles.errorText}>{transportTypeError}</Text> : null}
       <TextInput
         placeholder="Notes"
         value={company.notes}
         onChangeText={handleNotesChange}
-        style={styles.input}
+        style={[styles.input, focusedField === 'notes' && styles.focusedInput]}
         multiline
         accessibilityLabel="Notes input field"
+        onFocus={() => setFocusedField('notes')}
+        onBlur={() => setFocusedField(null)}
       />
       {generalError ? <Text style={styles.errorText}>{generalError}</Text> : null}
       <TouchableOpacity
         onPress={saveCompany}
-        style={styles.button}
+        style={[styles.button, focusedField === 'save' && styles.focusedButton]}
         accessibilityLabel="Save company button"
+        accessibilityRole="button"
+        accessibilityHint="Save the company details"
+        onFocus={() => setFocusedField('save')}
+        onBlur={() => setFocusedField(null)}
       >
         <Text style={styles.buttonText}>Save</Text>
       </TouchableOpacity>
@@ -185,13 +203,24 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    padding: 10,
+    padding: 15,
     marginBottom: 5,
     borderRadius: 5,
     fontSize: 16,
+    minHeight: 44,
+  },
+  focusedInput: {
+    borderColor: '#007bff',
+    borderWidth: 2,
   },
   errorText: {
     color: 'red',
@@ -200,9 +229,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: 'green',
-    padding: 10,
+    padding: 15,
     borderRadius: 5,
     alignItems: 'center',
+    minHeight: 44,
+  },
+  focusedButton: {
+    borderWidth: 2,
+    borderColor: '#000',
   },
   buttonText: {
     color: 'white',
