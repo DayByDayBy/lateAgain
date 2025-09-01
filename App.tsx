@@ -8,6 +8,7 @@ import HomeScreen from './src/HomeScreen';
 import CompanyList from './src/CompanyList';
 import CompanyForm from './src/CompanyForm';
 import QuickReporting from './src/QuickReporting';
+import UsefulInfoScreen from './src/UsefulInfoScreen';
 
 const Stack = createStackNavigator();
 
@@ -42,6 +43,7 @@ export default function App() {
             <Stack.Screen name="CompanyList" component={CompanyList} />
             <Stack.Screen name="CompanyForm" component={CompanyForm} />
             <Stack.Screen name="QuickReporting" component={QuickReporting} />
+            <Stack.Screen name="UsefulInfo" component={UsefulInfoScreen} />
           </>
         ) : (
           <Stack.Screen name="sign in to send" component={LoginScreen} />

@@ -54,6 +54,18 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ route, navigation }) => {
           <Text style={styles.buttonText}>Quick Reporting</Text>
         </TouchableOpacity>
         <TouchableOpacity
+          style={[styles.button, focusedButton === 'info' && styles.focusedButton]}
+          onPress={() => navigation.navigate('UsefulInfo')}
+          accessibilityLabel="Useful Information"
+          accessibilityRole="button"
+          accessibilityHint="Navigate to useful information about bus companies and regulatory bodies"
+          onFocus={() => setFocusedButton('info')}
+          onBlur={() => setFocusedButton(null)}
+        >
+          <MaterialIcons name="info" size={20} color="#fff" />
+          <Text style={styles.buttonText}>Useful Information</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
           style={[styles.button, styles.signOutButton, focusedButton === 'signout' && styles.focusedButton]}
           onPress={handleSignOut}
           accessibilityLabel="Sign Out"
