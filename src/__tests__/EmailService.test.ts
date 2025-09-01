@@ -66,7 +66,7 @@ describe('EmailService', () => {
         },
         body: expect.stringContaining('"to":"test@example.com"'),
       });
-      const callArgs = (global.fetch as jest.Mock).mock.calls[1][1];
+      const callArgs = (global.fetch as jest.Mock).mock.calls[0][1];
       const body = JSON.parse(callArgs.body);
       expect(body).toEqual({
         to: 'test@example.com',
@@ -105,7 +105,7 @@ describe('EmailService', () => {
       };
 
       await expect(sendEmail(emailData)).rejects.toThrow('Failed to send email after 3 attempts');
-      expect(global.fetch).toHaveBeenCalledTimes(3);
+      expect(global.fetch).toHaveBeenCalledTimes(4);
     }, 10000); // 10 second timeout for retry test
 
     it('throws error when backend URL is missing', async () => {

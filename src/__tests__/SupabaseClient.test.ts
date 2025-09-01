@@ -2,31 +2,21 @@
 jest.mock('@supabase/supabase-js', () => ({
   createClient: jest.fn(() => ({
     auth: {
-      signInWithOAuth: jest.fn(),
-      signOut: jest.fn(),
-      signUp: jest.fn(),
-      signInWithPassword: jest.fn(),
-      getUser: jest.fn(),
+      signInWithOAuth: jest.fn(() => Promise.resolve({ data: { user: { id: '123' } }, error: null })),
+      signOut: jest.fn(() => Promise.resolve({ error: null })),
+      signUp: jest.fn(() => Promise.resolve({ data: { user: { id: '123' } }, error: null })),
+      signInWithPassword: jest.fn(() => Promise.resolve({ data: { user: { id: '123' } }, error: null })),
+      getUser: jest.fn(() => Promise.resolve({ data: { user: { id: '123', email: 'test@example.com' } }, error: null })),
     },
+    from: jest.fn(() => ({
+      select: jest.fn(() => ({
+        eq: jest.fn(() => ({
+          single: jest.fn(() => Promise.resolve({ data: null, error: null })),
+        })),
+      })),
+      insert: jest.fn(() => Promise.resolve({ error: null })),
+    })),
   })),
-}));
-
-// Mock supabaseClient to prevent environment variable errors
-jest.mock('../supabaseClient', () => ({
-  supabase: {
-    auth: {
-      signInWithOAuth: jest.fn(),
-      signOut: jest.fn(),
-      signUp: jest.fn(),
-      signInWithPassword: jest.fn(),
-      getUser: jest.fn(),
-    },
-  },
-  signInWithGoogle: jest.fn(),
-  signOut: jest.fn(),
-  signUpWithEmail: jest.fn(),
-  signInWithPassword: jest.fn(),
-  getCurrentUser: jest.fn(),
 }));
 
 import { signInWithGoogle, signOut, signUpWithEmail, signInWithPassword, getCurrentUser } from '../supabaseClient';

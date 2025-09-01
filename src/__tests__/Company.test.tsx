@@ -23,10 +23,14 @@ jest.mock('../supabaseClient', () => ({
         error: null
       })),
       insert: jest.fn(() => Promise.resolve({ error: null })),
-      update: jest.fn(() => Promise.resolve({ error: null })),
-      delete: jest.fn(() => Promise.resolve({ error: null })),
+      update: jest.fn(() => ({
+        eq: jest.fn(() => Promise.resolve({ error: null }))
+      })),
+      delete: jest.fn(() => ({
+        eq: jest.fn(() => Promise.resolve({ error: null }))
+      })),
       eq: jest.fn(() => ({
-        error: null
+        single: jest.fn(() => Promise.resolve({ data: null, error: null }))
       }))
     }))
   }

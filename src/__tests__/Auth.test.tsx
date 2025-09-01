@@ -28,13 +28,13 @@ jest.mock('expo-auth-session', () => ({
   makeRedirectUri: jest.fn(() => 'redirect-uri'),
 }))
 
-const mockSignInWithGoogle = jest.fn()
+const mockSignInWithGoogle = jest.fn(() => Promise.resolve({ data: {}, error: null }))
 const mockSignOut = jest.fn()
 
 jest.mock('../supabaseClient', () => ({
   signInWithGoogle: mockSignInWithGoogle,
   signOut: mockSignOut,
-  getCurrentUser: jest.fn(),
+  getCurrentUser: jest.fn(() => Promise.resolve({ data: { user: { id: '123' } }, error: null })),
   supabase: {
     auth: {
       onAuthStateChange: jest.fn(() => ({

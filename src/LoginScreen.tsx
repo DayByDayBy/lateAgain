@@ -144,7 +144,7 @@ const LoginScreen = () => {
       </View>
 
       {authMethod === 'google' ? (
-        <TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn}>
+        <TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn} accessibilityLabel="Sign in with Google">
           <Text style={styles.buttonText}>Sign in with Google</Text>
         </TouchableOpacity>
       ) : (
