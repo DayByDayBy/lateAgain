@@ -2,6 +2,11 @@ jest.mock('expo', () => ({}))
 
 jest.mock('expo/src/winter/runtime.native', () => ({}))
 
+// Mock @expo/vector-icons
+jest.mock('@expo/vector-icons', () => ({
+  MaterialIcons: 'MaterialIcons',
+}))
+
 jest.mock('@supabase/supabase-js', () => ({
   createClient: jest.fn(() => ({
     auth: {

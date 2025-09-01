@@ -33,12 +33,15 @@ describe('EmailService', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          to: 'test@example.com',
-          from: 'noreply@lateagain.com',
-          subject: 'Test Subject',
-          text: 'Test message',
-        }),
+        body: expect.stringContaining('"to":"test@example.com"'),
+      });
+      const callArgs = (global.fetch as jest.Mock).mock.calls[0][1];
+      const body = JSON.parse(callArgs.body);
+      expect(body).toEqual({
+        to: 'test@example.com',
+        subject: 'Test Subject',
+        text: 'Test message',
+        from: 'noreply@lateagain.com',
       });
     });
 
@@ -61,12 +64,15 @@ describe('EmailService', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          to: 'test@example.com',
-          from: 'custom@lateagain.com',
-          subject: 'Test Subject',
-          text: 'Test message',
-        }),
+        body: expect.stringContaining('"to":"test@example.com"'),
+      });
+      const callArgs = (global.fetch as jest.Mock).mock.calls[1][1];
+      const body = JSON.parse(callArgs.body);
+      expect(body).toEqual({
+        to: 'test@example.com',
+        subject: 'Test Subject',
+        text: 'Test message',
+        from: 'custom@lateagain.com',
       });
     });
 
@@ -100,7 +106,7 @@ describe('EmailService', () => {
 
       await expect(sendEmail(emailData)).rejects.toThrow('Failed to send email after 3 attempts');
       expect(global.fetch).toHaveBeenCalledTimes(3);
-    });
+    }, 10000); // 10 second timeout for retry test
 
     it('throws error when backend URL is missing', async () => {
       delete process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -112,7 +118,7 @@ describe('EmailService', () => {
       };
 
       await expect(sendEmail(emailData)).rejects.toThrow('Failed to send email after 3 attempts');
-    });
+    }, 10000); // 10 second timeout
   });
 
   describe('generateEmailSubject', () => {

@@ -6,6 +6,33 @@ import HomeScreen from '../HomeScreen';
 import QuickReporting from '../QuickReporting';
 import CompanyForm from '../CompanyForm';
 
+// Mock supabaseClient to prevent environment variable errors
+jest.mock('../supabaseClient', () => ({
+  supabase: {
+    from: jest.fn(() => ({
+      select: jest.fn(() => Promise.resolve({ data: [], error: null })),
+      insert: jest.fn(() => Promise.resolve({ error: null })),
+      update: jest.fn(() => Promise.resolve({ error: null })),
+      delete: jest.fn(() => Promise.resolve({ error: null })),
+    })),
+    auth: {
+      signInWithOAuth: jest.fn(),
+      signOut: jest.fn(),
+      signUp: jest.fn(),
+      signInWithPassword: jest.fn(),
+      getUser: jest.fn(),
+    },
+  },
+}));
+
+// Mock AsyncStorage for QuickReporting component
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  getAllKeys: jest.fn(),
+}));
+
 describe('Accessibility Improvements', () => {
   // Ticket 4: Accessibility Improvements - Implement screen reader support, keyboard navigation, and other accessibility features
 

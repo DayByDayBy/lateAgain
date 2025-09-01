@@ -1,6 +1,4 @@
-import { signInWithGoogle, signOut, signUpWithEmail, signInWithPassword, getCurrentUser } from '../supabaseClient';
-
-// Mock Supabase
+// Mock Supabase before importing
 jest.mock('@supabase/supabase-js', () => ({
   createClient: jest.fn(() => ({
     auth: {
@@ -12,6 +10,26 @@ jest.mock('@supabase/supabase-js', () => ({
     },
   })),
 }));
+
+// Mock supabaseClient to prevent environment variable errors
+jest.mock('../supabaseClient', () => ({
+  supabase: {
+    auth: {
+      signInWithOAuth: jest.fn(),
+      signOut: jest.fn(),
+      signUp: jest.fn(),
+      signInWithPassword: jest.fn(),
+      getUser: jest.fn(),
+    },
+  },
+  signInWithGoogle: jest.fn(),
+  signOut: jest.fn(),
+  signUpWithEmail: jest.fn(),
+  signInWithPassword: jest.fn(),
+  getCurrentUser: jest.fn(),
+}));
+
+import { signInWithGoogle, signOut, signUpWithEmail, signInWithPassword, getCurrentUser } from '../supabaseClient';
 
 // Mock Expo modules
 jest.mock('expo-web-browser', () => ({

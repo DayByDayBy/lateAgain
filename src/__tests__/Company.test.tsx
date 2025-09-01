@@ -5,6 +5,14 @@ import CompanyForm from '../CompanyForm';
 import QuickReporting from '../QuickReporting';
 import { supabase } from '../supabaseClient';
 
+// Mock AsyncStorage for QuickReporting component
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  getAllKeys: jest.fn(),
+}));
+
 jest.mock('../supabaseClient', () => ({
   supabase: {
     from: jest.fn(() => ({
