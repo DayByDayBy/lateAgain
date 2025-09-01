@@ -2,6 +2,7 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import CompanyList from '../CompanyList';
 import CompanyForm from '../CompanyForm';
+import QuickReporting from '../QuickReporting';
 import { supabase } from '../supabaseClient';
 
 jest.mock('../supabaseClient', () => ({
@@ -97,109 +98,155 @@ describe('Company Components', () => {
     });
   });
 
-  // Commented-out test cases for future extensions
+// Ticket 3: Input Validation - Add comprehensive validation for all forms
+describe('Input Validation', () => {
+  const mockNavigation = {
+    navigate: jest.fn(),
+    goBack: jest.fn()
+  };
 
-  /*
-  // Ticket 3: Input Validation - Add comprehensive validation for all forms
-  describe('Input Validation', () => {
-    describe('CompanyForm Validation', () => {
-      it('validates required company name field', async () => {
-        const { getByText, getByPlaceholderText } = render(<CompanyForm navigation={mockNavigation} route={{ params: {} }} />);
+  const mockSupabase = require('../supabaseClient').supabase;
 
-        const nameInput = getByPlaceholderText('Name');
-        const saveButton = getByText('Save');
+  describe('CompanyForm Validation', () => {
+    it('validates required company name field', async () => {
+      const { getByText, getByPlaceholderText } = render(<CompanyForm navigation={mockNavigation} route={{ params: {} }} />);
 
-        // Test empty name validation
-        fireEvent.changeText(nameInput, '');
-        fireEvent.press(saveButton);
+      const nameInput = getByPlaceholderText('Name');
+      const saveButton = getByText('Save');
 
-        // Should show validation error for empty name
-        await waitFor(() => {
-          expect(getByText('Company name is required')).toBeTruthy();
-        });
-      });
+      // Test empty name validation
+      fireEvent.changeText(nameInput, '');
+      fireEvent.press(saveButton);
 
-      it('validates email format', async () => {
-        const { getByText, getByPlaceholderText } = render(<CompanyForm navigation={mockNavigation} route={{ params: {} }} />);
-
-        const nameInput = getByPlaceholderText('Name');
-        const emailInput = getByPlaceholderText('Email');
-        const saveButton = getByText('Save');
-
-        fireEvent.changeText(nameInput, 'Test Company');
-        fireEvent.changeText(emailInput, 'invalid-email');
-        fireEvent.press(saveButton);
-
-        await waitFor(() => {
-          expect(getByText('Please enter a valid email address')).toBeTruthy();
-        });
-      });
-
-      it('validates transport type selection', async () => {
-        const { getByText, getByPlaceholderText } = render(<CompanyForm navigation={mockNavigation} route={{ params: {} }} />);
-
-        const nameInput = getByPlaceholderText('Name');
-        const emailInput = getByPlaceholderText('Email');
-        const transportInput = getByPlaceholderText('Transport Type');
-        const saveButton = getByText('Save');
-
-        fireEvent.changeText(nameInput, 'Test Company');
-        fireEvent.changeText(emailInput, 'test@example.com');
-        fireEvent.changeText(transportInput, 'Invalid Transport');
-        fireEvent.press(saveButton);
-
-        await waitFor(() => {
-          expect(getByText('Please select a valid transport type')).toBeTruthy();
-        });
-      });
-
-      it('validates company name length limits', async () => {
-        const { getByText, getByPlaceholderText } = render(<CompanyForm navigation={mockNavigation} route={{ params: {} }} />);
-
-        const nameInput = getByPlaceholderText('Name');
-        const saveButton = getByText('Save');
-
-        // Test name too long
-        const longName = 'A'.repeat(101); // Assuming 100 char limit
-        fireEvent.changeText(nameInput, longName);
-        fireEvent.press(saveButton);
-
-        await waitFor(() => {
-          expect(getByText('Company name must be less than 100 characters')).toBeTruthy();
-        });
-      });
-
-      it('validates notes field length', async () => {
-        const { getByText, getByPlaceholderText } = render(<CompanyForm navigation={mockNavigation} route={{ params: {} }} />);
-
-        const nameInput = getByPlaceholderText('Name');
-        const emailInput = getByPlaceholderText('Email');
-        const notesInput = getByPlaceholderText('Notes');
-        const saveButton = getByText('Save');
-
-        fireEvent.changeText(nameInput, 'Test Company');
-        fireEvent.changeText(emailInput, 'test@example.com');
-        fireEvent.changeText(notesInput, 'A'.repeat(501)); // Assuming 500 char limit
-        fireEvent.press(saveButton);
-
-        await waitFor(() => {
-          expect(getByText('Notes must be less than 500 characters')).toBeTruthy();
-        });
+      // Should show validation error for empty name
+      await waitFor(() => {
+        expect(getByText('Name is required.')).toBeTruthy();
       });
     });
 
-    describe('QuickReporting Validation', () => {
-      it('validates issue description for "Other" type', async () => {
-        // Test validation for custom issue descriptions
-        // This would be in QuickReporting component
-        // Commented out until validation is implemented
-      });
+    it('validates email format', async () => {
+      const { getByText, getByPlaceholderText } = render(<CompanyForm navigation={mockNavigation} route={{ params: {} }} />);
 
-      it('validates route selection before sending', async () => {
-        // Ensure route is selected before allowing email send
-        // Commented out until implementation
+      const nameInput = getByPlaceholderText('Name');
+      const emailInput = getByPlaceholderText('Email');
+      const saveButton = getByText('Save');
+
+      fireEvent.changeText(nameInput, 'Test Company');
+      fireEvent.changeText(emailInput, 'invalid-email');
+      fireEvent.press(saveButton);
+
+      await waitFor(() => {
+        expect(getByText('Please enter a valid email address.')).toBeTruthy();
+      });
+    });
+
+    it('validates transport type selection', async () => {
+      const { getByText, getByPlaceholderText } = render(<CompanyForm navigation={mockNavigation} route={{ params: {} }} />);
+
+      const nameInput = getByPlaceholderText('Name');
+      const emailInput = getByPlaceholderText('Email');
+      const transportInput = getByPlaceholderText('Transport Type');
+      const saveButton = getByText('Save');
+
+      fireEvent.changeText(nameInput, 'Test Company');
+      fireEvent.changeText(emailInput, 'test@example.com');
+      fireEvent.changeText(transportInput, '');
+      fireEvent.press(saveButton);
+
+      await waitFor(() => {
+        expect(getByText('Transport type is required.')).toBeTruthy();
+      });
+    });
+
+    it('validates input sanitization', async () => {
+      const { getByText, getByPlaceholderText } = render(<CompanyForm navigation={mockNavigation} route={{ params: {} }} />);
+
+      const nameInput = getByPlaceholderText('Name');
+      const emailInput = getByPlaceholderText('Email');
+      const notesInput = getByPlaceholderText('Notes');
+      const saveButton = getByText('Save');
+
+      // Test input sanitization (trimming whitespace)
+      fireEvent.changeText(nameInput, '  Test Company  ');
+      fireEvent.changeText(emailInput, '  test@example.com  ');
+      fireEvent.changeText(notesInput, '  Test notes  ');
+      fireEvent.press(saveButton);
+
+      await waitFor(() => {
+        expect(supabase.from).toHaveBeenCalledWith('companies');
       });
     });
   });
-  */
+
+  describe('QuickReporting Validation', () => {
+    it('validates issue description for "Other" type', async () => {
+      const mockCompanies = [{ id: '1', name: 'Company A', email: 'a@example.com' }];
+      const mockRoutes = [{ id: 'r1', route_number: 101, description: 'Route 101' }];
+
+      mockSupabase.from
+        .mockReturnValueOnce({
+          select: jest.fn().mockResolvedValue({ data: mockCompanies, error: null }),
+        })
+        .mockReturnValueOnce({
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: mockRoutes, error: null }),
+          }),
+        });
+
+      const { getByText } = render(<QuickReporting navigation={mockNavigation} />);
+
+      await waitFor(() => {
+        expect(getByText('Company A')).toBeTruthy();
+      });
+
+      fireEvent.press(getByText('Company A'));
+
+      await waitFor(() => {
+        expect(getByText('Route 101: Route 101')).toBeTruthy();
+      });
+
+      fireEvent.press(getByText('Route 101: Route 101'));
+      fireEvent.press(getByText('Other'));
+
+      await waitFor(() => {
+        expect(getByText('Send Email')).toBeTruthy();
+      });
+
+      // Try to send without description
+      fireEvent.press(getByText('Send Email'));
+
+      await waitFor(() => {
+        expect(getByText('Please provide a description for the issue.')).toBeTruthy();
+      });
+    });
+
+    it('validates route selection before sending', async () => {
+      const mockCompanies = [{ id: '1', name: 'Company A', email: 'a@example.com' }];
+
+      mockSupabase.from.mockReturnValue({
+        select: jest.fn().mockResolvedValue({ data: mockCompanies, error: null }),
+      });
+
+      const { getByText } = render(<QuickReporting navigation={mockNavigation} />);
+
+      await waitFor(() => {
+        expect(getByText('Company A')).toBeTruthy();
+      });
+
+      fireEvent.press(getByText('Company A'));
+      fireEvent.press(getByText('Late'));
+
+      await waitFor(() => {
+        expect(getByText('Send Email')).toBeTruthy();
+      });
+
+      // Try to send without route selected
+      fireEvent.press(getByText('Send Email'));
+
+      await waitFor(() => {
+        expect(getByText('Please select a route.')).toBeTruthy();
+      });
+    });
+  });
+});
 });

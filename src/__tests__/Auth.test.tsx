@@ -62,23 +62,57 @@ describe('Auth Components', () => {
   })
 
   describe('HomeScreen', () => {
-    const mockUser = { email: 'test@example.com' }
-    const mockRoute = { params: { user: mockUser } }
-    const mockNavigation = {}
+   const mockUser = { email: 'test@example.com' }
+   const mockRoute = { params: { user: mockUser } }
+   const mockNavigation = { navigate: jest.fn() }
 
-    it('renders correctly with user', () => {
-      const { getByText } = render(<HomeScreen route={mockRoute} navigation={mockNavigation} />)
-      expect(getByText('Late Again')).toBeTruthy()
-      expect(getByText('Logged in as: test@example.com')).toBeTruthy()
-      expect(getByText('Sign Out')).toBeTruthy()
-    })
+   it('renders correctly with user', () => {
+     const { getByText } = render(<HomeScreen route={mockRoute} navigation={mockNavigation} />)
+     expect(getByText('Late Again')).toBeTruthy()
+     expect(getByText('Logged in as: test@example.com')).toBeTruthy()
+     expect(getByText('Sign Out')).toBeTruthy()
+   })
 
-    it('calls signOut on button press', async () => {
-      mockSignOut.mockResolvedValue({ error: null })
-      const { getByText } = render(<HomeScreen route={mockRoute} navigation={mockNavigation} />)
-      const button = getByText('Sign Out')
-      fireEvent.press(button)
-      expect(mockSignOut).toHaveBeenCalled()
-    })
+   it('calls signOut on button press', async () => {
+     mockSignOut.mockResolvedValue({ error: null })
+     const { getByText } = render(<HomeScreen route={mockRoute} navigation={mockNavigation} />)
+     const button = getByText('Sign Out')
+     fireEvent.press(button)
+     expect(mockSignOut).toHaveBeenCalled()
+   })
+
+   it('handles signOut errors gracefully', async () => {
+     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+     mockSignOut.mockResolvedValue({ error: { message: 'Sign out failed' } })
+
+     const { getByText } = render(<HomeScreen route={mockRoute} navigation={mockNavigation} />)
+     const button = getByText('Sign Out')
+     fireEvent.press(button)
+
+     expect(mockSignOut).toHaveBeenCalled()
+     expect(consoleSpy).toHaveBeenCalledWith('Error signing out:', 'Sign out failed')
+
+     consoleSpy.mockRestore()
+   })
+
+   it('renders navigation buttons correctly', () => {
+     const { getByText } = render(<HomeScreen route={mockRoute} navigation={mockNavigation} />)
+     expect(getByText('Manage Companies')).toBeTruthy()
+     expect(getByText('Quick Reporting')).toBeTruthy()
+   })
+
+   it('navigates to CompanyList on button press', () => {
+     const { getByText } = render(<HomeScreen route={mockRoute} navigation={mockNavigation} />)
+     const button = getByText('Manage Companies')
+     fireEvent.press(button)
+     expect(mockNavigation.navigate).toHaveBeenCalledWith('CompanyList')
+   })
+
+   it('navigates to QuickReporting on button press', () => {
+     const { getByText } = render(<HomeScreen route={mockRoute} navigation={mockNavigation} />)
+     const button = getByText('Quick Reporting')
+     fireEvent.press(button)
+     expect(mockNavigation.navigate).toHaveBeenCalledWith('QuickReporting')
+   })
   })
 })
