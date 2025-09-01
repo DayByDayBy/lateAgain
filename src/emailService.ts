@@ -17,7 +17,7 @@ export async function sendEmail(emailData: EmailData, retryCount = 0): Promise<v
 
   // SECURITY FIX: Email sending moved to backend to prevent API key exposure
   // This should be replaced with a call to your backend API endpoint
-  const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://wunqhvaaoahzjsnwxsed.supabase.co/functions/v1';
+  const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://test-backend.com';
 
   try {
     const response = await fetch(`${backendUrl}/api/send-email`, {

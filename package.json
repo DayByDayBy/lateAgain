@@ -45,10 +45,11 @@
       "<rootDir>/jest.setup.js"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?|expo.*))"
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?|expo.*|@expo/vector-icons))"
     ],
     "moduleNameMapper": {
-      "^expo/src/winter$": "<rootDir>/__mocks__/expo-winter.js"
+      "^expo/src/winter$": "<rootDir>/__mocks__/expo-winter.js",
+      "^@expo/vector-icons$": "<rootDir>/__mocks__/@expo/vector-icons.js"
     }
   }
 }

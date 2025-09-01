@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, act } from '@testing-library/react-native';
+import { render, fireEvent, act, waitFor } from '@testing-library/react-native';
 import { AccessibilityInfo } from 'react-native';
 import LoginScreen from '../LoginScreen';
 import HomeScreen from '../HomeScreen';
@@ -59,13 +59,15 @@ describe('Accessibility Improvements', () => {
       expect(transportInput.props.accessibilityLabel).toBe('Transport type input field');
     });
 
-    it('renders with proper accessibility structure', () => {
+    it('renders with proper accessibility structure', async () => {
       const mockNavigation = {};
       const { getByText } = render(<QuickReporting navigation={mockNavigation} />);
 
       // Verify the component renders with expected accessibility elements
-      expect(getByText('Select Company:')).toBeTruthy();
       expect(getByText('Quick Reporting')).toBeTruthy();
+      await waitFor(() => {
+        expect(getByText('Select Company:')).toBeTruthy();
+      });
     });
   });
 

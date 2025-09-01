@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Alert, AccessibilityInfo, StyleSheet } from 'react-native';
-import { supabase } from './supabaseClient';
+import { supabase, getUserProfile } from './supabaseClient';
 
 interface Company {
   id: string;
@@ -25,7 +25,6 @@ const CompanyList: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   const fetchUserRole = async () => {
-    const { getUserProfile } = await import('./supabaseClient');
     const profile = await getUserProfile();
     setUserRole(profile?.role || null);
   };

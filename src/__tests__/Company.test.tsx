@@ -13,27 +13,25 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   getAllKeys: jest.fn(),
 }));
 
+const mockQueryBuilder: any = {
+  select: jest.fn(() => Promise.resolve({
+    data: [
+      { id: '1', name: 'Test Company', email: 'test@example.com', transport_type: 'Bus', notes: 'Test notes' }
+    ],
+    error: null
+  })),
+  insert: jest.fn(() => Promise.resolve({ error: null })),
+  update: jest.fn(() => mockQueryBuilder),
+  delete: jest.fn(() => mockQueryBuilder),
+  eq: jest.fn(() => Promise.resolve({ error: null })),
+  single: jest.fn(() => Promise.resolve({ data: null, error: null }))
+};
+
 jest.mock('../supabaseClient', () => ({
   supabase: {
-    from: jest.fn(() => ({
-      select: jest.fn(() => Promise.resolve({
-        data: [
-          { id: '1', name: 'Test Company', email: 'test@example.com', transport_type: 'Bus', notes: 'Test notes' }
-        ],
-        error: null
-      })),
-      insert: jest.fn(() => Promise.resolve({ error: null })),
-      update: jest.fn(() => ({
-        eq: jest.fn(() => Promise.resolve({ error: null }))
-      })),
-      delete: jest.fn(() => ({
-        eq: jest.fn(() => Promise.resolve({ error: null }))
-      })),
-      eq: jest.fn(() => ({
-        single: jest.fn(() => Promise.resolve({ data: null, error: null }))
-      }))
-    }))
-  }
+    from: jest.fn(() => mockQueryBuilder)
+  },
+  getUserProfile: jest.fn(() => Promise.resolve({ role: 'admin' }))
 }));
 
 describe('Company Components', () => {

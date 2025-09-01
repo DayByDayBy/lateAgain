@@ -1,12 +1,9 @@
+// Mock all dependencies before imports
 jest.mock('expo', () => ({}))
-
 jest.mock('expo/src/winter/runtime.native', () => ({}))
-
-// Mock @expo/vector-icons
 jest.mock('@expo/vector-icons', () => ({
   MaterialIcons: 'MaterialIcons',
 }))
-
 jest.mock('@supabase/supabase-js', () => ({
   createClient: jest.fn(() => ({
     auth: {
@@ -19,17 +16,16 @@ jest.mock('@supabase/supabase-js', () => ({
     }
   }))
 }))
-
 jest.mock('expo-web-browser', () => ({
   maybeCompleteAuthSession: jest.fn(),
 }))
-
 jest.mock('expo-auth-session', () => ({
   makeRedirectUri: jest.fn(() => 'redirect-uri'),
 }))
 
+// Mock supabaseClient functions
 const mockSignInWithGoogle = jest.fn(() => Promise.resolve({ data: {}, error: null }))
-const mockSignOut = jest.fn()
+const mockSignOut = jest.fn(() => Promise.resolve({ error: null }))
 
 jest.mock('../supabaseClient', () => ({
   signInWithGoogle: mockSignInWithGoogle,
@@ -88,7 +84,7 @@ describe('Auth Components', () => {
 
    it('handles signOut errors gracefully', async () => {
      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
-     mockSignOut.mockResolvedValue({ error: { message: 'Sign out failed' } })
+     ;(mockSignOut as any).mockResolvedValue({ error: { message: 'Sign out failed' } })
 
      const { getByText } = render(<HomeScreen route={mockRoute} navigation={mockNavigation} />)
      const button = getByText('Sign Out')
